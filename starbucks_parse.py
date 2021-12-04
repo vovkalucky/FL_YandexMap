@@ -10,7 +10,7 @@ def get_data():
         book = openpyxl.open("starbucks.xlsx", read_only=True)
 
         sheet = book.active
-        for i in range(130, sheet.max_row+1):
+        for i in range(128, sheet.max_row+1):
             adress = sheet[i][1].value  # [row][column]
             name = sheet[i][0].value
             print(f"Сохраняю место с именем {name} {i}/{sheet.max_row}")
@@ -54,7 +54,8 @@ cities_json = {
 # Сохраняем в формат JSON и открываем файл
 def write_json(city, places):
     with open('cities/'+cities_json[city]+'.json', "a", encoding="utf-8") as file:
-        json.dump(places, file, indent=4, ensure_ascii=False)
+        json.dump(*places, file, indent=4, ensure_ascii=False)
+        file.write('\n')
 
 
 def main():
