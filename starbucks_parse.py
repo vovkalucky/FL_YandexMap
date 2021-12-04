@@ -3,9 +3,13 @@ from geopy.geocoders import ArcGIS
 import json
 
 def get_data():
-    book = openpyxl.open("starbucks.xlsx", read_only=True)
+    try:
+        book = openpyxl.open("starbucks.xlsx", read_only=True)
+    except Exception as ex:
+        print(ex)
+        print('Файл starbucks.xlsx не найден')
     sheet = book.active
-    for i in range(2,sheet.max_row+1):
+    for i in range(2, sheet.max_row+1):
         adress = sheet[i][1].value  # [row][column]
         name = sheet[i][0].value
         print(f"Сохраняю место с именем {name} {i}/{sheet.max_row}")
@@ -19,7 +23,8 @@ def get_data():
         adress_part = adress.replace(',', '').replace('.', ' ').split()
         try:
             city = list(set(adress_part) & set(cities))[0]
-        except:
+        except Exception as ex:
+            print(ex)
             city = 'Город не найден'
         places = []
         places.append({
@@ -35,16 +40,16 @@ cities = ['Москва', 'Московская область', 'Санкт-П�
     'Краснодар', 'Сочи']
 
 cities_json = {
-    'Москва': 'moscow.json', 'Московская область': 'moscow_obl.json', 'Казань': 'Kazan.json',
-    'Самара': 'samara.json', 'Екатеринбург': 'ekaterinburg.json', 'Тюмень': 'tymen.json',
-    'Ярославль': 'yaroslavl.json',
-    'Краснодар': 'krasnodar.json', 'Сочи': 'Sochi.json', 'Санкт-Петербург' : 'Sankt_Peterburg.json',
-    'Город не найден': 'empty.json'}
+    'Москва': 'moscow', 'Московская область': 'moscow_obl', 'Казань': 'kazan',
+    'Самара': 'samara', 'Екатеринбург': 'ekaterinburg', 'Тюмень': 'tymen',
+    'Ярославль': 'yaroslavl',
+    'Краснодар': 'krasnodar', 'Сочи': 'sochi', 'Санкт-Петербург' : 'sankt_peterburg',
+    'Город не найден': 'empty'}
 
 
 # Сохраняем в формат JSON и открываем файл
 def write_json(city, places):
-    with open('cities/'+cities_json[city], "a", encoding="utf-8") as file:
+    with open('cities/'+cities_json[city]+'.json', "a", encoding="utf-8") as file:
         json.dump(places, file, indent=4, ensure_ascii=False)
 
 
