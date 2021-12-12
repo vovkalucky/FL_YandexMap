@@ -29,7 +29,7 @@ def get_data():
             places = {
                 "coords": [latitude, longitude],
                 "name": name,
-                "adress": adress
+                "address": adress
             }
             write_json(city, places)
     except Exception as ex:
@@ -53,7 +53,7 @@ cities_json = {
 def write_json(city, places):
     with open('cities/'+cities_json[city]+'.json', "a", encoding="utf-8") as file:
         json.dump(places, file, indent=4, ensure_ascii=False)
-        file.write('\n')
+        file.write(';\n')
 
 
 def main():
