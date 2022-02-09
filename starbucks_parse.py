@@ -7,7 +7,7 @@ import time
 
 def get_data():
     try:
-        book = openpyxl.open("starbucks.xlsx", read_only=True)
+        book = openpyxl.open("starbucks_new.xlsx", read_only=True)
 
         sheet = book.active
         for i in range(2, sheet.max_row+1): #sheet.max_row+1
@@ -16,15 +16,15 @@ def get_data():
             print(f"Сохраняю место с именем {name} {i}/{sheet.max_row}")
             try:
                 response = ArcGIS(user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36').geocode(adress)
-                latitude = round(response.latitude,3)  # широта
-                longitude = round(response.longitude,3)  # долгота
+                latitude = round(response.latitude,4)  # широта
+                longitude = round(response.longitude,4)  # долгота
             except:
                 latitude = 'Адрес не найден'
                 longitude = 'Адрес не найден'
 
-            adress_part = adress.replace(',', '').replace('.', ' ').split()
+            adress_part = adress.split(',')
             try:
-                city = list(set(adress_part) & set(cities))[0]
+                city = adress_part[0]
             except Exception as ex:
                 city = 'Город не найден'
             places = {
@@ -37,22 +37,14 @@ def get_data():
         print(ex)
         print('Файл starbucks.xlsx не найден')
 
-cities = ['Москва', 'Московская область', 'Санкт-Петербург', 'Казань',
-    'Самара', 'Екатеринбург', 'Тюмень',
-    'Ярославль',
-    'Краснодар', 'Сочи']
-
-cities_json = {
-    'Москва': 'moscow', 'Московская область': 'moscow_obl', 'Казань': 'kazan',
-    'Самара': 'samara', 'Екатеринбург': 'ekaterinburg', 'Тюмень': 'tymen',
-    'Ярославль': 'yaroslavl',
-    'Краснодар': 'krasnodar', 'Сочи': 'sochi', 'Санкт-Петербург' : 'sankt_peterburg',
-    'Город не найден': 'empty'}
-
-
 # Сохраняем в формат JSON и открываем файл
 def write_json(city, places):
-    with open('cities/'+cities_json[city]+'.json', "a", encoding="utf-8") as file:
+    #with open('cities/'+cities_json[city]+'.json', "a", encoding="utf-8") as file:
+    if (places['coords'][0] == 'Адрес не найден'):
+        with open('cities/empty.json', "a", encoding="utf-8") as file:
+            json.dump(places, file, ensure_ascii=False)
+            file.write(',\n')
+    with open('cities/' + city +'.json', "a", encoding="utf-8") as file:
         json.dump(places, file, ensure_ascii=False)
         file.write(',\n')
 
